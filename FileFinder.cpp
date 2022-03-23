@@ -24,15 +24,6 @@ int wmain(int argc, wchar_t *argv[])
 	}
 
 	//
-	//	Add substrings to the list.
-	//
-	std::vector<std::wstring> substrList;
-	for (int i = 2; i < argc; i++)
-	{
-		substrList.push_back(argv[i]);
-	}
-
-	//
 	//	I am assuming that it will have full path of directory as an argument to scan files.
 	//
 	std::wstring directoryToScan = argv[1];
@@ -40,10 +31,19 @@ int wmain(int argc, wchar_t *argv[])
 	//
 	//	Check directory existance.
 	//
-	if (-1 == _waccess(directoryToScan.c_str(), 0))
+	if (-1 == _waccess(directoryToScan.c_str(), 00))
 	{
 		wprintf(L"Invalid directory path!!!\n");
 		return 0;
+	}
+
+	//
+	//	Add substrings to the list.
+	//
+	std::vector<std::wstring> substrList;
+	for (int i = 2; i < argc; i++)
+	{
+		substrList.push_back(argv[i]);
 	}
 
 	ScanManager::Create(directoryToScan, (int)substrList.size(), substrList);

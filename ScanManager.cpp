@@ -80,7 +80,7 @@ bool ScanManager::InitScan()
 	}
 
 	m_hEventDumpScanResult = CreateEventW(NULL, FALSE, FALSE, NULL);
-	if (NULL == m_hEventStopThreads)
+	if (NULL == m_hEventDumpScanResult)
 	{
 		CloseHandle(m_hEventStopThreads);
 		m_hEventStopThreads = NULL;
@@ -104,6 +104,9 @@ bool ScanManager::InitScan()
 		m_arrScanningThreads[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)this->ThreadFileFinderScan, &m_arrScanContext[i], 0, NULL);
 		if (NULL == m_arrScanningThreads[i])
 		{
+			//
+			//	Unable to create thread. we must unblock previously created threads waiting for stop threads event.
+			//
 			SetEvent(m_hEventStopThreads);
 			WaitForSingleObject(m_hScanResultDumperThread, INFINITE);
 			CloseHandle(m_hScanResultDumperThread);
@@ -222,9 +225,16 @@ bool ScanManager::StartScanning(int iSubstringFilterIndex)
 	std::wstring directoryToScan = m_strDirectoryToScan;
 
 	//
-	//	Append "\*" to search complete directory
+	//	Append "\*" to search complete directory, append only "*" if last character is "\\"
 	//
-	directoryToScan += L"\\*";
+	if (L'\\' == directoryToScan.back())
+	{
+		directoryToScan += L"*";
+	}
+	else
+	{
+		directoryToScan += L"\\*";
+	}
 
 	std::wstring lcfilter;
 	bool boRet = GetSubstringFilter(iSubstringFilterIndex, lcfilter);

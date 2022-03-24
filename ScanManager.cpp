@@ -73,12 +73,18 @@ bool ScanManager::InitScan()
 		return false;
 	}
 
+	//
+	//	Create a notification thread which will wakes all the threads.
+	//
 	m_hEventStopThreads = CreateEventW(NULL, TRUE, FALSE, NULL);
 	if (NULL == m_hEventStopThreads)
 	{
 		return false;
 	}
 
+	//
+	//	Create a synchronization event.
+	//
 	m_hEventDumpScanResult = CreateEventW(NULL, FALSE, FALSE, NULL);
 	if (NULL == m_hEventDumpScanResult)
 	{
@@ -87,7 +93,7 @@ bool ScanManager::InitScan()
 		return false;
 	}
 
-	m_hScanResultDumperThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)this->ThreadScanResultDump, this, 0, NULL);
+	m_hScanResultDumperThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)this->ThreadScanResultDump, NULL, 0, NULL);
 	if (NULL == m_hScanResultDumperThread)
 	{
 		CloseHandle(m_hEventDumpScanResult);
@@ -135,6 +141,9 @@ bool ScanManager::InitScan()
 
 bool ScanManager::DeinitScan()
 {
+	//
+	//	Signal all threads to exit.
+	//
 	SetEvent(m_hEventStopThreads);
 
 	WaitForSingleObject(m_hScanResultDumperThread, INFINITE);
@@ -301,6 +310,7 @@ bool ScanManager::GetSubstringFilter(int iIndex, std::wstring& substringFilter)
 	{
 		return false;
 	}
+
 	substringFilter = m_substringList[iIndex];
 	return true;
 }

@@ -11,7 +11,7 @@ std::unique_ptr<ScanManager> ScanManager::s_ScanManager = nullptr;
 
 int wmain(int argc, wchar_t *argv[])
 {
-	int choice;
+	int iChoice;
 
 	//
 	//	Program should have atleast 3 commadline arguments.
@@ -58,9 +58,20 @@ int wmain(int argc, wchar_t *argv[])
 	do
 	{
 		wprintf(L"\n1. Dump scan result \n0. Exit \nEnter Choice: ");
-		wscanf_s(L"%d", &choice);
+		int iRet = wscanf_s(L"%d", &iChoice);
+		while (iRet != 1)
+		{
+			//
+			//	To handle condition when user enter choice other than number.
+			//
+			int temp;
+			while ((temp = getchar()) != EOF && temp != '\n');
+			wprintf(L"Invalid input\n");
+			wprintf(L"\n1. Dump scan result \n0. Exit \nEnter Choice: ");
+			iRet = wscanf_s(L"%d", &iChoice);
+		}
 
-		switch (choice)
+		switch (iChoice)
 		{
 		case 0:
 			break;
@@ -77,7 +88,7 @@ int wmain(int argc, wchar_t *argv[])
 
 		}
 
-	} while (choice != 0);
+	} while (iChoice != 0);
 
 	ScanManager::GetInstance()->DeinitScan();
 	ScanManager::Release();

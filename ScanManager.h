@@ -1,8 +1,7 @@
 #pragma once
 
-#define SECOND			(1000 * 1)
-#define MIN				(SECOND * 60)
-//#define SCAN_RESULT_DUMP_TIMEOUT	(1 * MIN)
+#define SECOND						(1000 * 1)
+#define MIN							(SECOND * 60)
 #define SCAN_RESULT_DUMP_TIMEOUT	(5 * SECOND)
 
 class ScanManager
